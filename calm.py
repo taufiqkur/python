@@ -1,6 +1,7 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 # Memuat dan Memproses Data
 data = pd.read_csv('gt.csv')  # Gantilah 'nama_file.csv' dengan nama file dataset Anda
 data['Date'] = pd.to_datetime(data['Date'])  # Mengkonversi format kolom 'Date' menjadi datetime
-
+print(data.head())
 # Menambahkan MA
 data['MA_20'] = data['Close'].rolling(window=20).mean()  # Rata-rata pergerakan harian
 data['MA_10'] = data['Close'].rolling(window=10).mean()  # Rata-rata pergerakan mingguan
@@ -63,6 +64,34 @@ data['DayOfWeek'] = data['Date'].dt.dayofweek
 X = data.drop(['Date', 'Close'], axis=1)  # Menghapus kolom 'Date' dan 'Target'
 y = data['Close']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Poin 3: Lakukan Feature Scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Membangun Model XGBoost dengan data yang telah di-scaled
+model_scaled = xgb.XGBRegressor(objective='reg:squarederror', colsample_bytree=0.3, learning_rate=0.1,
+                                max_depth=5, alpha=10, n_estimators=10)
+model_scaled.fit(X_train_scaled, y_train)
+
+# Mengevaluasi Model yang telah di-scaled
+y_pred_scaled = model_scaled.predict(X_test_scaled)
+mae_scaled = mean_absolute_error(y_test, y_pred_scaled)
+print(f'Scaled MAE: {mae_scaled}')
+
+# Poin 4: Validasi Model
+mse = mean_squared_error(y_test, y_pred_scaled)
+r2 = r2_score(y_test, y_pred_scaled)
+print(f'MSE: {mse}')
+print(f'R-squared: {r2}')
+
+# Poin 5: Cross-Validation
+scoring = 'neg_mean_absolute_error'
+cv_scores = cross_val_score(model_scaled, X_train_scaled, y_train, cv=5, scoring=scoring)
+
+print(f'Cross-Validation Scores: {cv_scores}')
+print(f'Mean Cross-Validation Score: {np.mean(cv_scores)}')
 
 # Membangun Model XGBoost
 model = xgb.XGBRegressor(objective='reg:squarederror', colsample_bytree=0.3, learning_rate=0.1,
