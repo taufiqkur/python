@@ -19,7 +19,6 @@ def calculate_rsi(data, period=14):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-
 # Fungsi untuk menghitung Bollinger Bands
 def calculate_bollinger_bands(data, window=20, num_std_dev=2):
     rolling_mean = data['Close'].rolling(window=window).mean()
@@ -29,7 +28,6 @@ def calculate_bollinger_bands(data, window=20, num_std_dev=2):
     lower_band = rolling_mean - (rolling_std * num_std_dev)
 
     return upper_band, rolling_mean, lower_band
-
 
 # Fungsi untuk menghitung Bollinger Bands di Masa Depan
 def calculate_future_bollinger_bands(data, window=20, num_std_dev=2, num_days=1):

@@ -1,0 +1,51 @@
+/* File: static/style.css */
+
+/* Gaya untuk elemen form */
+form {
+    margin-top: 20px;
+}
+
+/* Gaya untuk label */
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Gaya untuk input teks */
+input[type="text"] {
+    width: 200px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+/* Gaya untuk tombol submit */
+button[type="submit"] {
+    padding: 8px 20px;
+    background-color: #007bff; /* Warna latar belakang biru */
+    color: #fff; /* Warna teks putih */
+    border: none;
+    cursor: pointer;
+}
+
+/* Gaya untuk judul */
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Gaya untuk hasil prediksi */
+.prediction-table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.prediction-table th, .prediction-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.prediction-table th {
+    background-color: #f2f2f2; /* Warna latar belakang abu-abu */
+    color: #333; /* Warna teks abu-abu */
+}

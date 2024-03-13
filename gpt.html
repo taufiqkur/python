@@ -1,0 +1,30 @@
+<!-- File: templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Prediksi Saham</title>
+    <link rel="stylesheet" href="gpt.css">
+</head>
+
+<body>
+    <h1>Sistem Prediksi Saham</h1>
+    <form action="/predict" method="post">
+        <label for="ticker">Masukkan Ticker Saham:</label>
+        <input type="text" id="ticker" name="ticker">
+        <br>
+        <label for="start_date">Masukkan Tanggal Awal (YYYY-MM-DD):</label> <!-- Penambahan field untuk tanggal awal -->
+        <input type="text" id="start_date" name="start_date">
+        <br>
+        <button type="submit">Prediksi</button>
+    </form>
+
+    {% if prediction %}
+    <h2>Prediksi Harga Saham:</h2>
+    {{ prediction | safe }} <!-- Menggunakan "safe" agar HTML dirender dengan aman -->
+    {% endif %}
+</body>
+
+</html>
