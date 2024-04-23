@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Prediksi</title>
+</head>
+
+<body>
+    <h1>Hasil Prediksi Harga Saham</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Harga Saham (Prediksi)</th>
+                <!-- Tambahkan kolom lain sesuai kebutuhan -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in predicted_data %}
+            <tr>
+                <td>{{ row.Date }}</td>
+                <td>{{ row['Close(Predicted)'] }}</td>
+                <!-- Tambahkan kolom lain sesuai kebutuhan -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
