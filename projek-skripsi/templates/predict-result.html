@@ -32,14 +32,34 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    
+                    <!--<h3>hasil prediksi</h3>-->
+                    <p>Mean Absolute Error (MAE): {{ mae }}</p>
+                    <p>Root Mean Squared Error (RMSE): {{ rmse }}</p>
+                    <p>Mean Absolute Percentage Error (MAPE): {{ mape }}</p>
+                    <!--<div id="graph"></div>--> <!-- Div untuk menampilkan grafik -->
+                    <!--<table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Harga Saham (Prediksi)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(predict_data.shape[0]) %}
+                            <tr>
+                                <td>{{ predict_data.iloc[i]['Date'] }}</td>
+                                <td>{{ predict_data.iloc[i]['Close(Predicted)'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>-->
                 </div>
             </div>
         </form>
         <div class="form-group">
             <h3>hasil prediksi</h3>
             <!--<p>Mean Absolute Error (MAE): {{ mae }}</p>-->
-            <div id="graph"></div> <!-- Div untuk menampilkan grafik -->
+            <div id="graph"></div> 
             <table class="table">
                 <thead>
                     <tr>
@@ -61,21 +81,51 @@
 
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script>
-        var data = JSON.parse('{{ graph_data | safe }}');
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    var data = JSON.parse('{{ graph_data | safe }}');
 
-        // Membuat grafik menggunakan Plotly
-        Plotly.newPlot('graph', [{
-            x: data.map(item => item['Date']),
-            y: data.map(item => item['Close(Predicted)']),
-            mode: 'lines',
-            name: 'Predicted Close Price'
-        }], {
-            title: 'Predicted Close Price',
-            xaxis: { title: 'Date' },
-            yaxis: { title: 'Price' }
-        });
-    </script>
+    // Membuat trace untuk harga saham aktual
+    var trace_actual = {
+        x: data.map(item => item['Date']),
+        y: data.map(item => parseFloat(item['Close'])),  // Harga saham aktual
+        mode: 'lines+markers',
+        name: 'Harga Saham Aktual',
+        marker: { symbol: 'circle' },
+        line: { color: 'blue' }
+    };
+
+    // Membuat trace untuk prediksi harga saham
+    var trace_predicted = {
+        x: data.map(item => item['Date']),
+        y: data.map(item => parseFloat(item['Close(Predicted)'])),  // Harga prediksi model
+        mode: 'lines+markers',
+        name: 'Prediksi',
+        marker: { symbol: 'circle' },
+        line: { color: 'green' }
+    };
+
+    // Membuat trace untuk prediksi masa depan
+    var trace_future = {
+        x: data.map(item => item['Date']),  // Tanggal untuk prediksi masa depan
+        y: data.map(item => parseFloat(item['Close(Predicted)'])),  // Harga prediksi masa depan
+        mode: 'lines+markers',
+        name: 'Prediksi Masa Depan',
+        marker: { symbol: 'circle' },
+        line: { color: 'orange' }
+    };
+
+    // Layout untuk pengaturan grafik
+    var layout = {
+        title: 'Prediksi Harga Saham',
+        xaxis: { title: 'Tanggal' },
+        yaxis: { title: 'Harga Saham' },
+        showlegend: true
+    };
+
+    // Membuat plot menggunakan Plotly
+    Plotly.newPlot('graph', [trace_actual, trace_predicted, trace_future], layout);
+</script>
 
 </body>
 
