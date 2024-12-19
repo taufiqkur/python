@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+import numpy as np  # Perlu untuk perhitungan sqrt
 import plotly.graph_objs as go  # Import Plotly library
 import json
 from model import load_best_model, predict_future_with_technical_features, calculate_moving_averages, calculate_rsi, calculate_macd
@@ -54,24 +56,33 @@ def predict():
             # Membagi Data menjadi Data Latih dan Data Uji
             X = input_data.drop(['Date', 'Close'], axis=1)
             y = input_data['Close']
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            X_train1, X_test1, y_train1, y_test1 = train_test_split(X, y, test_size=0.2, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
 
             y_pred = best_model.predict(X_test)
             mae = mean_absolute_error(y_test, y_pred)
             print(f'MAE: {mae}')
 
+            # Menghitung RMSE
+            rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+            print(f'RMSE: {rmse}')
+
+            # Menghitung MAPE
+            mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
+            print(f'MAPE: {mape}')
+
             # Proses input dan eksekusi prediksi
             predict_data = predict_future_with_technical_features(best_model, input_data, start_date, end_date)
             predict_data['Date'] = predict_data['Date'].astype(str)
             predict_data['Close(Predicted)'] = predict_data['Close(Predicted)'].astype(str)
-            print("Nilai predict_data type:", predict_data.dtypes)
+            #print("Nilai predict_data type:", predict_data.dtypes)
             print("Nilai predict_data:", predict_data)
 
             # Data untuk grafik
             graph_data_json = predict_data.to_json(orient='records')
 
             # Render template dan hasil prediksi
-            return render_template("predict-result.html", predict_data=predict_data, graph_data=graph_data_json, mae=mae)
+            return render_template("predict-result.html", predict_data=predict_data, graph_data=graph_data_json, mae=mae, rmse=rmse, mape=mape)
         except Exception as e:
                 # Mencetak pesan kesalahan jika ada
                 print("Error:", e)
